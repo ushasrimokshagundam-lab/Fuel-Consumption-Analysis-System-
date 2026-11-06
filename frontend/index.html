@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fuel Consumption Analysis System</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛽</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="css/style.css"></head><body>
+<div class="app">
+<aside><h1>⛽ FuelTrack</h1><small>Fuel Consumption Analysis System</small>
+<button data-v="dash" class="on">📊 Dashboard</button><button data-v="veh">🚗 Vehicles</button><button data-v="rec">⛽ Fuel records</button><button data-v="rep">📋 Reports</button><button data-v="his">🖨️ Vehicle history</button><button id="reset" style="margin-top:14px;font-size:13px">🔄 Reset sample data</button></aside>
+<main>
+<section id="dash" class="on">
+<h2>Dashboard</h2><p class="sub">Live data from the backend API · all figures calculated server-side from valid odometer readings</p>
+<div class="bar"><label><input type="checkbox" id="incApprox"> Include approximate (partial-fill) readings in averages</label></div>
+<div class="grid kpis" id="kpis"></div>
+<div class="grid two"><div class="card"><b>Average mileage by vehicle (km/L)</b><div class="chart"><canvas id="c1"></canvas></div></div>
+<div class="card"><b>Monthly mileage trend (km/L)</b><div class="chart"><canvas id="c2"></canvas></div></div>
+<div class="card"><b>Monthly fuel spend (₹)</b><div class="chart"><canvas id="c3"></canvas></div></div>
+<div class="card"><b>Fuel cost per km (₹)</b><div class="chart"><canvas id="c4"></canvas></div></div></div>
+</section>
+
+<section id="veh"><h2>Vehicles</h2><p class="sub">vehicles(vehicle_id, vehicle_code, vehicle_type, fuel_type)</p>
+<div class="card" style="margin-bottom:14px"><form id="vf"><div><label>Vehicle code</label><input name="code" required placeholder="CAR-02"></div>
+<div><label>Type</label><select name="type"><option>Hatchback</option><option>Sedan</option><option>SUV</option><option>Motorcycle</option><option>Van</option><option>Truck</option></select></div>
+<div><label>Fuel</label><select name="fuel"><option>Petrol</option><option>Diesel</option><option>CNG</option></select></div><button class="btn">Add vehicle</button></form></div>
+<div class="card scroll"><table id="vt"></table></div></section>
+
+<section id="rec"><h2>Fuel records</h2><p class="sub">fuel_records(record_id, vehicle_id, fill_date, odometer_km, litres, total_cost, full_tank_flag)</p>
+<div class="card" style="margin-bottom:14px"><form id="rf"><div><label>Vehicle</label><select name="v" id="rv"></select></div>
+<div><label>Date</label><input type="date" name="d" required></div><div><label>Odometer (km)</label><input type="number" name="o" required min="0"></div>
+<div><label>Litres</label><input type="number" name="l" step="0.01" required></div><div><label>Total cost (₹)</label><input type="number" name="c" step="0.01" required></div>
+<div><label>Tank filled?</label><select name="f"><option value="1">Full tank</option><option value="0">Partial fill</option></select></div><button class="btn">Add record</button></form></div>
+<div class="bar"><label>Filter <select id="rfil" style="width:auto"></select></label></div>
+<div class="card scroll"><table id="rt"></table></div></section>
+
+<section id="rep"><h2>Reports</h2><p class="sub">Vehicle-wise mileage, expense summary and invalid-reading report</p>
+<div class="note"><b>How mileage is calculated.</b> <b>Full-tank:</b> distance between two consecutive full-tank fills ÷ all litres filled in that interval (accurate). <b>Approximate:</b> distance since the previous valid reading ÷ litres in a partial fill (only an estimate, because the tank level is unknown). Approximate values are labelled and excluded from averages unless you switch them on in the dashboard.</div>
+<div class="bar noprint"><a class="btn dl" href="/api/export/mileage.csv">⬇ Mileage CSV</a><a class="btn dl" href="/api/export/expenses.csv">⬇ Expenses CSV</a><a class="btn dl" href="/api/export/invalid.csv">⬇ Invalid readings CSV</a></div>
+<div class="card scroll" style="margin-bottom:14px"><b>Vehicle-wise mileage report</b><table id="r1"></table></div>
+<div class="card scroll" style="margin-bottom:14px"><b>Fuel expense summary (by month)</b><table id="r2"></table></div>
+<div class="card scroll"><b>Invalid-reading report</b><table id="r3"></table></div></section>
+<section id="his"><h2>Vehicle history</h2><p class="sub noprint">Choose a vehicle, then either the full history or one record, and print it.</p>
+<div class="card noprint" style="margin-bottom:14px"><form><div><label>Vehicle</label><select id="hv"></select></div><div><label>Record</label><select id="hr"></select></div><button type="button" class="btn" id="pb">🖨️ Print</button></form></div>
+<div class="card" id="pa"></div></section>
+</main></div>
+<script src="js/app.js"></script></body></html>
